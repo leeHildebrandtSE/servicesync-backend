@@ -1,40 +1,126 @@
 {
-  "name": "servicesync-backend",
+  "name": "servicesync",
   "version": "1.0.0",
-  "description": "Hospital Meal Delivery Tracking System Backend",
-  "main": "src/server.js",
+  "description": "Hospital Meal Delivery Tracking System",
   "type": "module",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "test": "jest",
-    "db:migrate": "knex migrate:latest",
-    "db:seed": "knex seed:run",
-    "db:rollback": "knex migrate:rollback",
-    "db:reset": "npm run db:rollback && npm run db:migrate && npm run db:seed"
+    "dev": "node --watch src/server.js",
+    "start": "NODE_ENV=production node src/server.js",
+    "build": "echo 'Backend build not required for Node.js'",
+    "migrate": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "migrate:make": "knex migrate:make",
+    "seed": "knex seed:run",
+    "seed:make": "knex seed:make",
+    "db:reset": "knex migrate:rollback --all && knex migrate:latest && knex seed:run",
+    "db:fresh": "npm run db:reset",
+    "test": "echo 'Tests not implemented yet'",
+    "test:watch": "echo 'Test watch not implemented yet'",
+    "lint": "eslint src --ext .js",
+    "lint:fix": "eslint src --ext .js --fix",
+    "format": "prettier --write src/**/*.js",
+    "check": "npm run lint && npm run format",
+    "logs": "tail -f logs/servicesync.log",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop servicesync",
+    "pm2:restart": "pm2 restart servicesync",
+    "pm2:logs": "pm2 logs servicesync",
+    "docker:build": "docker build -t servicesync .",
+    "docker:run": "docker run -p 3001:3001 servicesync"
   },
+  "keywords": [
+    "hospital",
+    "meal-delivery",
+    "tracking",
+    "healthcare",
+    "socket.io",
+    "real-time",
+    "postgresql",
+    "express",
+    "jwt"
+  ],
+  "author": "ServiceSync Team",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
     "express-rate-limit": "^7.1.5",
-    "helmet": "^7.1.0",
     "cors": "^2.8.5",
+    "helmet": "^7.1.0",
     "dotenv": "^16.3.1",
-    "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
-    "joi": "^17.11.0",
+    "bcryptjs": "^2.4.3",
+    "winston": "^3.11.0",
     "knex": "^3.0.1",
     "pg": "^8.11.3",
-    "redis": "^4.6.10",
-    "multer": "^1.4.5-lts.1",
     "socket.io": "^4.7.4",
     "uuid": "^9.0.1",
-    "moment": "^2.29.4",
-    "winston": "^3.11.0",
-    "express-async-errors": "^3.1.1"
+    "joi": "^17.11.0",
+    "multer": "^1.4.5-lts.1",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "@types/node": "^20.10.4",
     "jest": "^29.7.0",
     "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/servicesync.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/servicesync/issues"
+  },
+  "homepage": "https://github.com/your-org/servicesync#readme",
+  "knexfile": "./knexfile.js",
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+    "testMatch": ["<rootDir>/tests/**/*.test.js"],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/migrations/**",
+      "!src/seeds/**"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2022": true,
+      "jest": true
+    },
+    "extends": ["eslint:recommended"],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "warn",
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+      "prefer-const": "error",
+      "no-var": "error"
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 100,
+    "tabWidth": 2
+  },
+  "nodemonConfig": {
+    "watch": ["src"],
+    "ext": "js,json",
+    "ignore": ["src/logs/*", "*.test.js"],
+    "delay": "1000"
   }
 }
